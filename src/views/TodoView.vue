@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <h1>Minha Lista de Tarefas</h1>
-    <input v-model="newTaskText" placeholder="Digite uma tarefa" />
+    <input v-model="newTaskText" placeholder="Digite uma tarefa" @keyup.enter="addTask" />
     <button @click="addTask">Adicionar</button>
 
     <div class="labels">
@@ -9,7 +9,12 @@
       <p class="done-count">Concluidas: {{ doneCount }}</p>
     </div>
 
-    <TaskList :tasks="tasks" @toggle-complete="toggleComplete" />
+    <TaskList
+      :tasks="tasks"
+      @toggle-complete="toggleComplete"
+      @edit-task="editTask"
+      @remove-task="removeTask"
+    />
   </div>
 </template>
 
@@ -36,6 +41,17 @@ function toggleComplete(taskId) {
   if (task) {
     task.completed = !task.completed
   }
+}
+
+function editTask({ id, newText }) {
+  const task = tasks.value.find((t) => t.id === id)
+  if (task) {
+    task.text = newText
+  }
+}
+
+function removeTask(id) {
+  tasks.value = tasks.value.filter((t) => t.id !== id)
 }
 
 const pendingCount = computed(() => tasks.value.filter((t) => !t.completed).length)
